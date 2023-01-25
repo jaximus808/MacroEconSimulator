@@ -537,7 +537,7 @@ class LoanableFunds
 
 
             stroke(255, 255, 0);
-            text("$"+parseInt(this.eQD * ((this.c+this.d+this.width)/this.width)),this.eX + this.x+(this.c+this.d)/2,this.height+this.y+20. )
+            text("Q2",this.eX + this.x+(this.c+this.d)/2,this.height+this.y+20. )
             
             stroke(255, 255, 0);
             text("rIR 2",this.x-20, this.eY+this.y-(this.c/2)+(this.d/2))
@@ -583,7 +583,7 @@ class LoanableFunds
         text("QLF", this.x +this.width/2, this.height+this.y+50)
 
 
-        text("$"+(parseFloat(this.eQD)*2).toFixed(2), this.x +this.width, this.height+this.y+20)
+        //text("$"+(parseFloat(this.eQD)*2).toFixed(2), this.x +this.width, this.height+this.y+20)
 
 
         text("Loanable Funds", this.x+40, this.y-25)
@@ -808,7 +808,7 @@ class MoneyMarket
         
         text(parseInt(this.eQD * 2*((this.eX+(this.b)/2)/this.width)),this.eX+this.x+(this.b)/2,this.height+this.y+20 )
 
-        text("nIR",this.x-20,this.eY+this.y-(this.a)+(this.b/2))
+        text("nIR 1" ,this.x-20,this.eY+this.y-(this.a)+(this.b/2))
 
         stroke(0,0,0)
         
