@@ -26,6 +26,9 @@
         </style>
     </head>
     <body>
+        <div><h1>Macro Econ Simulator v1</h1><h3>by: Jaxon Poentis (check me out: <span><a target="_blank" href="https://jaxonpoentis.vercel.app/">https://jaxonpoentis.vercel.app/</a></span>)</h3>
+        </div>
+        <div><button onclick="FullReset()">Full Reset</button></div>
         <div  style="display:flex;width:60%; ">
             <div style="width:15vw;margin-left:5px">
                 <h3>Equilibirum</h3>
@@ -140,6 +143,24 @@
                 <button onclick="IncInvest()">Increase Gov Loans</button>
                 <button onclick="DecInvest()">Decrease Gov Loans</button>
             </div>
+        </div>
+        <div style="margin-top:5vh;display:flex;width:100%; ">
+            <div>
+                <div style="width:15vw;margin-left:5px">
+                    <h3>Foreign Exchange Demand</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider"oninput="UpdateFED()" id="FEDInput">
+                    </div>
+                </div>
+                <div >
+                    <h3>Foreign Exchange Supply</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" oninput="UpdateFES()" id="FESInput">
+                    </div>
+                </div>
+                <button onclick="resetForeign()">reset</button>
+            </div>
+            
         </div>
         <script src="app.js"></script>
     </body>

@@ -4,8 +4,185 @@ var ADASGraphPage;
 var MoneyMarketPage;
 var LoanableFundsPage
 var PhilipsCurvePage; 
+var ForeignExchangePage; 
 
 graphoffest = 10;
+
+
+class ForeignExchange 
+{
+    constructor(x,y, width, height)
+    {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height; 
+
+        this.ADX1 = 0; 
+        this.ADX2 = this.width; 
+
+        this.ADY1 = -((this.width/2)) + height/2;
+        this.ADY2 = ((this.width/2)) + height/2;
+
+        this.ASX1 = 0; 
+        this.ASX2 = this.width; 
+
+        this.ASY1 = ((this.width/2)) + height/2;
+        this.ASY2 = -((this.width/2)) + height/2;
+        this.a = (this.width)*((document.getElementById("FEDInput").value-50)/50); 
+        this.b = (this.width)*((document.getElementById("FESInput").value-50)/50); 
+        
+        //shifts in AD
+        this.c=(this.width)*((document.getElementById("FEDInput").value-50)/50);
+
+        //shifts in SRAS
+        this.d =(this.width)*((document.getElementById("FESInput").value-50)/50);
+
+        this.isChanging = false;
+
+        this.eX = this.width/2; 
+        this.eY = height/2;
+        this.ePL = 0.3
+        this.eQD = 300000
+        this.MPC = parseFloat(document.getElementById("MPCInput").value);
+        this.MPS = 1-this.MPC; 
+
+        this.InvestAmount = parseFloat(document.getElementById("InvestAmount").value)*(1/this.MPS);
+
+        document.getElementById("MPSValue").innerHTML = this.MPS.toFixed(2);
+        document.getElementById("spendMulti").innerHTML =  `1 / ${this.MPS.toFixed(2)}`;
+        document.getElementById("outputChange").innerHTML =  ` ${parseFloat(document.getElementById("fiscalInput").value)*(1/this.MPS).toFixed(2)}`;
+
+    } 
+
+    updateA(value)
+    {
+        this.a = (this.width)*((value-50)/50);
+
+        this.c=(this.width)*((value-50)/50);
+        this.isChanging = false; 
+    }
+
+    updateB(value)
+    {
+        this.b = (this.height)*((value-50)/50);
+        this.d=(this.height)*((value-50)/50);
+
+        this.isChanging = false; 
+    }
+  
+    convertMoneytoPosition(money)
+    {
+        return (money/this.eQD)*this.width
+    }
+    
+    convertValuetoPercentChange(money)
+    {
+        return (money/this.eQD)
+    }
+
+
+    DemandInc(percentChange)
+    {
+
+        this.isChanging = true; 
+        this.c += percentChange*this.width
+    }
+
+    SupplyInc(percentChange)
+    {
+
+        this.isChanging = true; 
+        this.d += percentChange*this.width
+    }
+
+    
+
+    render() 
+    {
+        
+        strokeWeight(4);
+        //LRAS
+        //AD
+
+        stroke(243, 23, 0);
+        line(this.x + this.ADX1+Math.max(this.a,0) +graphoffest, this.y+this.ADY1-Math.min(this.a,0)+graphoffest,this.x +  this.ADX2+Math.min(0,this.a)-graphoffest,this.y+ this.ADY2-Math.max(0,this.a)-graphoffest);
+
+        stroke(0, 23, 243);
+
+        //AS
+        line(this.x + this.ASX1+Math.max(this.b,0) + graphoffest, this.y+this.ASY1+Math.min(this.b,0) - graphoffest,this.x +  this.ASX2+Math.min(0,this.b)-graphoffest,this.y+ this.ASY2+Math.max(0,this.b)+graphoffest);
+
+        if(this.isChanging)
+        {
+            stroke(243, 23, 0);
+            line(this.x + this.ADX1+Math.max(this.c,0)+graphoffest , this.y+this.ADY1-Math.min(this.c,0)+graphoffest,this.x +  this.ADX2+Math.min(0,this.c)-graphoffest,this.y+ this.ADY2-Math.max(0,this.c)-graphoffest);
+
+            stroke(0, 23, 243);
+
+        //AS
+            line(this.x + this.ASX1+Math.max(this.d,0) + graphoffest, this.y+this.ASY1+Math.min(this.d,0) - graphoffest,this.x +  this.ASX2+Math.min(0,this.d)-graphoffest,this.y+ this.ASY2+Math.max(0,this.d)+graphoffest);
+            strokeWeight(1);
+
+
+
+            stroke(255, 255, 0);
+            text("Q2",this.eX + this.x+(this.c+this.d)/2,this.height+this.y+20. )
+            
+            stroke(255, 255, 0);
+            text("Er2",this.x-20, this.eY+this.y-(this.c/2)+(this.d/2))
+            
+            stroke(0,0,0)
+
+            text("E2",this.eX+this.x+(this.c+this.d)/2,  this.eY+this.y-(this.c/2)+(this.d/2)-10-5 )
+            if(this.c != this.a) text("D2",this.x +  this.ADX2+Math.min(0,this.c),this.y+ this.ADY2-Math.max(0,this.c) - 10 )
+            if(this.d != this.b) text("S2",this.x +  this.ASX2+Math.min(0,this.d),  this.y+ this.ASY2+Math.max(0,this.d) - 10)
+
+            //text("E2",this.eX+this.x+(this.c+this.d)/2-5,  this.eY+this.y-(this.c/2)+(this.d/2)-10-10 )
+            strokeWeight(6);
+            circle(this.eX+this.x+(this.c+this.d)/2, this.eY+this.y-(this.c/2)+(this.d/2), 4,4)
+        }
+        strokeWeight(6);
+
+        stroke(0,0,0)
+        circle(this.eX+this.x+(this.a+this.b)/2, this.eY+this.y-(this.a/2)+(this.b/2), 4,4)
+
+        line(this.x, this.y, this.x, this.y+this.height)
+
+        line(this.x, this.y+this.height, this.x+this.width, this.y+this.height)
+
+
+        strokeWeight(1);
+        text("E1",this.eX+this.x+(this.a+this.b)/2,  this.eY+this.y-(this.a/2)+(this.b/2)-10-5 )
+
+
+        
+
+        text("S1",this.x +  this.ASX2+Math.min(0,this.b),  this.y+ this.ASY2+Math.max(0,this.b) - 10)
+        text("D1",this.x +  this.ADX2+Math.min(0,this.a), this.y+ this.ADY2-Math.max(0,this.a) - 10)
+
+        stroke(255,0,0);
+        
+        text("Q1",this.eX + this.x+(this.a+this.b)/2,this.height+this.y+20. )
+
+        text("Er1",this.x-20, this.eY+this.y-(this.a/2)+(this.b/2))
+
+        stroke(0,0,0)
+
+        text("F/D", this.x - 50, this.height/2+this.y)
+
+
+        //text(parseFloat(this.ePL)*2, this.x - 20, this.y)
+
+        text("Q", this.x +this.width/2, this.height+this.y+50)
+
+        text("Foreign Exchange", this.x+60, this.y-15)
+
+        //text("$"+(parseFloat(this.eQD)*2).toFixed(2), this.x +this.width, this.height+this.y+20)
+
+    }
+}
+
 
 
 
@@ -45,7 +222,7 @@ class PhilipsCurve
         this.eX = this.width/2; 
         this.eY = this.height/2;
         this.ePL = 0.3//document.getElementById("equilPriceLevelInput").value;
-        this.eQD = 1000000//document.getElementById("equilOutputInput").value;
+        this.eQD = 5//document.getElementById("equilOutputInput").value;
         this.rr = parseFloat(document.getElementById("rrInput").value);
 
         this.MSChange = parseFloat((isNaN(document.getElementById("bondAmount").value) ||document.getElementById("bondAmount").value=="") ? 0 :document.getElementById("bondAmount").value )*(1/this.rr)
@@ -143,10 +320,10 @@ class PhilipsCurve
             
             strokeWeight(1)
             stroke(255, 255, 0);
-            text(parseInt(this.eQD * 2*((this.eX+(this.d)/2)/this.width)),this.eX+this.x+(this.d)/2,this.height+this.y+20 )
+            text("UE",this.eX+this.x+(this.d+this.c),this.height+this.y+20 )
             
             stroke(255, 255, 0);
-            text(parseFloat(this.ePL * 2*(this.height-this.eY+(this.c)-(this.d/2))/this.height).toFixed(2),this.x-20,this.eY+this.y-(this.c)+(this.d/2))
+            text("π 2",this.x-20,this.eY+this.y-(this.c)+(this.d/2))
 
             
             stroke(0,0,0)
@@ -171,34 +348,35 @@ class PhilipsCurve
 
         strokeWeight(1);
         textAlign(CENTER)
-        text("E1",this.eX+this.x+(this.b+this.a),  this.eY+this.y-(this.a)+(this.b/2)-10 )
+        text("E1",this.eX+this.x+(this.b+this.a)+15,  this.eY+this.y-(this.a)+(this.b/2)-10 )
 
 
         
 
-        text("LRPC",this.x +  this.MSX2+this.b/2,  this.y+ this.MSY1-8)
+        text("LRPC",this.x +  this.MSX2,  this.y+ this.MSY1-8)
         text("SRPC",this.x +  this.MDX2+Math.min(0,this.a), this.y+ this.MDY2-Math.max(0,this.a) - 10)
 
         stroke(255,0,0);
         
-        text(parseInt(this.eQD * 2*((this.eX+(this.b)/2)/this.width)),this.eX+this.x+(this.b+this.a),this.height+this.y+20 )
+        text("UE 1",this.eX+this.x+(this.b+this.a),this.height+this.y+20 )
 
-        text(parseFloat (this.ePL * 2*(this.height-this.eY+(this.a)-(this.b/2))/this.height).toFixed(2),this.x-20,this.eY+this.y-(this.a)+(this.b/2))
+        text("π 1",this.x-20,this.eY+this.y-(this.a)+(this.b/2))
 
         stroke(0,0,0)
         
-        text("Inf", this.x - 50, this.height/2+this.y)
+        text("Infl(π)", this.x - 50, this.height/2+this.y)
 
 
-        text(parseFloat(this.ePL)*2, this.x - 20, this.y)
 
         text("Unemployment", this.x +this.width/2, this.height+this.y+50)
 
+        
 
-        text(parseFloat(this.eQD)*2, this.x +this.width, this.height+this.y+20)
+        text(parseFloat(this.eQD)*2 +"%", this.x +this.width, this.height+this.y+20)
 
 
 
+        text("Philip Curve", this.x+40, this.y-15)
 
     }
 }
@@ -242,7 +420,7 @@ class LoanableFunds
         this.MPC = parseFloat(document.getElementById("MPCInput").value);
         this.MPS = 1-this.MPC; 
 
-        this.fiscalChange = parseFloat(document.getElementById("fiscalInput").value)*(1/this.MPS);
+        this.InvestAmount = parseFloat(document.getElementById("InvestAmount").value)*(1/this.MPS);
 
         document.getElementById("MPSValue").innerHTML = this.MPS.toFixed(2);
         document.getElementById("spendMulti").innerHTML =  `1 / ${this.MPS.toFixed(2)}`;
@@ -267,6 +445,28 @@ class LoanableFunds
     }
 
 
+    IncInvest()
+    {
+        this.isChanging = true; 
+        this.c += this.convertMoneytoPosition(this.InvestAmount); 
+
+        ADASGraphPage.monetaryPolicyDec(this.convertValuetoPercentChange(this.InvestAmount))
+
+        MoneyMarketPage.MDDec(this.convertValuetoPercentChange(this.InvestAmount))
+
+    }
+
+
+    DecInvest()
+    {
+        this.isChanging = true; 
+        this.c -= this.convertMoneytoPosition(this.InvestAmount); 
+        
+        ADASGraphPage.monetaryPolicyInc(this.convertValuetoPercentChange(this.InvestAmount))
+
+        MoneyMarketPage.MDInc(this.convertValuetoPercentChange(this.InvestAmount))
+    }
+  
   
 
     convertMoneytoPosition(money)
@@ -321,7 +521,7 @@ class LoanableFunds
         stroke(0, 23, 243);
 
         //AS
-        line(this.x + this.ASX1+Math.max(this.b,0) + graphoffest, this.y+this.ASY1+Math.min(this.b,0) - graphoffest,this.x +  this.ASX2+Math.min(0,this.b)-graphoffest,this.y+ this.ASY2+Math.max(0,this.b)-graphoffest);
+        line(this.x + this.ASX1+Math.max(this.b,0) + graphoffest, this.y+this.ASY1+Math.min(this.b,0) - graphoffest,this.x +  this.ASX2+Math.min(0,this.b)-graphoffest,this.y+ this.ASY2+Math.max(0,this.b)+graphoffest);
 
         if(this.isChanging)
         {
@@ -331,7 +531,7 @@ class LoanableFunds
             stroke(0, 23, 243);
 
         //AS
-            line(this.x + this.ASX1+Math.max(this.d,0) + graphoffest, this.y+this.ASY1+Math.min(this.d,0) - graphoffest,this.x +  this.ASX2+Math.min(0,this.d)-graphoffest,this.y+ this.ASY2+Math.max(0,this.d)-graphoffest);
+            line(this.x + this.ASX1+Math.max(this.d,0) + graphoffest, this.y+this.ASY1+Math.min(this.d,0) - graphoffest,this.x +  this.ASX2+Math.min(0,this.d)-graphoffest,this.y+ this.ASY2+Math.max(0,this.d)+graphoffest);
             strokeWeight(1);
 
 
@@ -340,19 +540,19 @@ class LoanableFunds
             text("$"+parseInt(this.eQD * ((this.c+this.d+this.width)/this.width)),this.eX + this.x+(this.c+this.d)/2,this.height+this.y+20. )
             
             stroke(255, 255, 0);
-            text(parseFloat(this.ePL * (2*((this.eY+(this.c/2) -this.d/2)))/this.height).toFixed(2),this.x-20, this.eY+this.y-(this.c/2)+(this.d/2))
+            text("rIR 2",this.x-20, this.eY+this.y-(this.c/2)+(this.d/2))
             
             stroke(0,0,0)
             if(this.c != this.a) text("Dlf2",this.x +  this.ADX2+Math.min(0,this.c),this.y+ this.ADY2-Math.max(0,this.c) - 10 )
 
             text("E2",this.eX+this.x+(this.c+this.d)/2-5,  this.eY+this.y-(this.c/2)+(this.d/2)-10-10 )
             strokeWeight(6);
-            circle(this.eX+this.x+(this.c+this.d)/2-6, this.eY+this.y-(this.c/2)+(this.d/2)-6, 4,4)
+            circle(this.eX+this.x+(this.c+this.d)/2, this.eY+this.y-(this.c/2)+(this.d/2), 4,4)
         }
         strokeWeight(6);
 
         stroke(0,0,0)
-        circle(this.eX+this.x+(this.a+this.b)/2-5, this.eY+this.y-(this.a/2)+(this.b/2)-5, 4,4)
+        circle(this.eX+this.x+(this.a+this.b)/2, this.eY+this.y-(this.a/2)+(this.b/2), 4,4)
 
         line(this.x, this.y, this.x, this.y+this.height)
 
@@ -360,7 +560,7 @@ class LoanableFunds
 
 
         strokeWeight(1);
-        text("E1",this.eX+this.x+(this.a+this.b)/2-5,  this.eY+this.y-(this.a/2)+(this.b/2)-10-5 )
+        text("E1",this.eX+this.x+(this.a+this.b)/2,  this.eY+this.y-(this.a/2)+(this.b/2)-10-5 )
 
 
         
@@ -370,22 +570,23 @@ class LoanableFunds
 
         stroke(255,0,0);
         
-        text("$"+parseInt(this.eQD * ((this.a+this.b+this.width)/this.width)),this.eX + this.x+(this.a+this.b)/2,this.height+this.y+20. )
+        text("Q1",this.eX + this.x+(this.a+this.b)/2,this.height+this.y+20. )
 
-        text(parseFloat(this.ePL * (2*((this.eY+(this.a/2) -this.b/2)))/this.height).toFixed(2),this.x-20, this.eY+this.y-(this.a/2)+(this.b/2))
+        text("rIR 1",this.x-20, this.eY+this.y-(this.a/2)+(this.b/2))
 
         stroke(0,0,0)
 
         text("rIR", this.x - 50, this.height/2+this.y)
 
 
-        text(parseFloat(this.ePL)*2, this.x - 20, this.y)
 
         text("QLF", this.x +this.width/2, this.height+this.y+50)
 
 
         text("$"+(parseFloat(this.eQD)*2).toFixed(2), this.x +this.width, this.height+this.y+20)
 
+
+        text("Loanable Funds", this.x+40, this.y-25)
     }
 }
 
@@ -418,10 +619,10 @@ class MoneyMarket
         this.b = (this.width)*((document.getElementById("MSInput").value-50)/50); 
         
         //shifts in AD
-        this.c=(this.width)*((document.getElementById("MDInput").value-50)/50)//(this.width)*((document.getElementById("ADInput").value-50)/50);
+        this.c= (this.width)*((document.getElementById("MDInput").value-50)/50)//(this.width)*((document.getElementById("ADInput").value-50)/50);
 
         //shifts in SRAS
-        this.d =(this.width)*((document.getElementById("MDInput").value-50)/50)//(this.width)*((document.getElementById("ASInput").value-50)/50);
+        this.d = (this.width)*((document.getElementById("MSInput").value-50)/50)//(this.width)*((document.getElementById("ASInput").value-50)/50);
 
 
         this.isChanging = false;
@@ -570,7 +771,7 @@ class MoneyMarket
             text(parseInt(this.eQD * 2*((this.eX+(this.d)/2)/this.width)),this.eX+this.x+(this.d)/2,this.height+this.y+20 )
             
             stroke(255, 255, 0);
-            text(parseFloat (this.ePL * 2*(this.height-this.eY+(this.c)-(this.d/2))/this.height).toFixed(2),this.x-20,this.eY+this.y-(this.c)+(this.d/2))
+            text("nIR 2",this.x-20,this.eY+this.y-(this.c)+(this.d/2))
             
             stroke(0,0,0)
 
@@ -607,14 +808,13 @@ class MoneyMarket
         
         text(parseInt(this.eQD * 2*((this.eX+(this.b)/2)/this.width)),this.eX+this.x+(this.b)/2,this.height+this.y+20 )
 
-        text(parseFloat (this.ePL * 2*(this.height-this.eY+(this.a)-(this.b/2))/this.height).toFixed(2),this.x-20,this.eY+this.y-(this.a)+(this.b/2))
+        text("nIR",this.x-20,this.eY+this.y-(this.a)+(this.b/2))
 
         stroke(0,0,0)
         
         text("nIR", this.x - 50, this.height/2+this.y)
 
 
-        text(parseFloat(this.ePL)*2, this.x - 20, this.y)
 
         text("MQ", this.x +this.width/2, this.height+this.y+50)
 
@@ -623,6 +823,7 @@ class MoneyMarket
 
 
 
+        text("Money Market", this.x+40, this.y-25)
 
     }
 }
@@ -727,6 +928,7 @@ class ADASGraph
         MoneyMarketPage.MDInc(this.convertValuetoPercentChange(this.fiscalChange))
         LoanableFundsPage.govSpend(this.convertValuetoPercentChange(this.fiscalChange))
         PhilipsCurvePage.govSave(this.convertValuetoPercentChange(this.fiscalChange))
+        ForeignExchangePage.DemandInc(this.convertValuetoPercentChange(this.fiscalChange))
     }
 
     GDPSave()
@@ -738,6 +940,7 @@ class ADASGraph
         LoanableFundsPage.govSave(this.convertValuetoPercentChange(this.fiscalChange))
 
         PhilipsCurvePage.govSpend(this.convertValuetoPercentChange(this.fiscalChange))
+        ForeignExchangePage.SupplyInc(this.convertValuetoPercentChange(this.fiscalChange))
     }
 
     convertMoneytoPosition(money)
@@ -756,6 +959,9 @@ class ADASGraph
         this.isChanging = true; 
         console.log(percentChange)
         this.c += percentChange*this.width
+        PhilipsCurvePage.govSave(percentChange);
+
+        ForeignExchangePage.DemandInc(percentChange)
     }
     
     monetaryPolicyDec(percentChange)
@@ -764,6 +970,9 @@ class ADASGraph
         this.isChanging = true; 
         console.log(percentChange)
         this.c -= percentChange*this.width
+        PhilipsCurvePage.govSpend(percentChange);
+
+        ForeignExchangePage.SupplyInc(percentChange)
     }
 
     render() 
@@ -796,7 +1005,7 @@ class ADASGraph
             text(parseFloat(this.eQD * ((this.c+this.d+this.width)/this.width)).toFixed(2),this.eX + this.x+(this.c+this.d)/2,this.height+this.y+20. )
             
             stroke(0,0,0)
-            text("AD2",this.x +  this.ADX2+Math.min(0,this.c),this.height+this.y-20. )
+            text("AD2",this.x +  this.ADX2+Math.min(0,this.c), this.y+ this.ADY2-Math.max(0,this.c) - 10. )
 
             text("E2",this.eX+this.x+(this.c+this.d)/2,  this.eY+this.y-(this.c/2)+(this.d/2)-10 )
             strokeWeight(6);
@@ -843,6 +1052,7 @@ class ADASGraph
 
         text((parseFloat(this.eQD)*2).toFixed(2), this.x +this.width, this.height+this.y+20)
 
+        text("AD and AS", this.x+40, this.y-25)
     }
 }
 function setup()
@@ -851,6 +1061,7 @@ function setup()
     MoneyMarketPage = new MoneyMarket(80,440 , 300, 300)
     LoanableFundsPage = new LoanableFunds(450, 50, 300, 300);
     PhilipsCurvePage = new PhilipsCurve(450, 440, 300, 300);
+    ForeignExchangePage = new ForeignExchange(80, 830, 300, 300  )
     createCanvas(innerWidth-50,ADASGraphPage.height+ADASGraphPage.y +MoneyMarketPage.height +(MoneyMarketPage.y-ADASGraphPage.y )+LoanableFundsPage.height +500 );
 
 }
@@ -862,6 +1073,7 @@ function draw()
     MoneyMarketPage.render();   
     LoanableFundsPage.render()
     PhilipsCurvePage.render();
+    ForeignExchangePage.render();
 }
 
 
@@ -995,4 +1207,32 @@ function resetLF()
     document.getElementById("LFSInput").value = 50
     UpdateLFD()
     UpdateLFS()
+}
+
+function UpdateFED()
+{
+    ForeignExchangePage.updateA(document.getElementById("FEDInput").value);
+}
+
+function UpdateFES()
+{
+
+    ForeignExchangePage.updateB(document.getElementById("FESInput").value);
+}
+
+function resetForeign()
+{
+
+    document.getElementById("FEDInput").value = 50
+    document.getElementById("FESInput").value = 50
+    UpdateFED();
+    UpdateFES();
+}
+
+function FullReset()
+{
+    resetASAD()
+    resetLF()
+    resetMDMS(); 
+    resetForeign(); 
 }
