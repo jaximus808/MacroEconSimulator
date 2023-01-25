@@ -1,0 +1,146 @@
+<html>
+    <head>
+        <script src="p5.js"></script>
+        <style>
+            .slider {
+                width: 100%; /* Full-width */
+                height: 25px; /* Specified height */
+            
+                -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+                transition: opacity .2s;
+                }
+
+            /* Mouse-over effects */
+            .slider:hover {
+            opacity: 1; /* Fully shown on mouse-over */
+            }
+            #defaultCanvas0
+            {
+                position: absolute;
+                left:45%;
+                top:0;
+            }
+            body{
+                overflow-x: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div  style="display:flex;width:60%; ">
+            <div style="width:15vw;margin-left:5px">
+                <h3>Equilibirum</h3>
+                <span>Equilibirum Price: </span>
+                <input id="equilPriceLevelInput" oninput="updateEPL()" value="50"> 
+                <p></p>
+                <span>Equilibirum Output: </span>
+                <input oninput="updateEY()" id="equilOutputInput"value="50"> 
+            </div>
+            <div style="width:15vw;margin-left:5px">
+                <h3>MPC/MPS</h3>
+                <span>MPC: </span>
+                <input oninput="updateMPC()" id="MPCInput" value="0.5">
+                <p></p>
+                <span>MPS: <span id="MPSValue">0.5</span></span> 
+
+            </div>
+            <div>
+                <div style="width:15vw;margin-left:5px">
+                    <h3>Aggregate Demand</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider"oninput="UpdateAD()" id="ADInput">
+                    </div>
+                </div>
+                <div >
+                    <h3>Aggregate Supply</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" oninput="UpdateAS()" id="ASInput">
+                    </div>
+                </div>
+                <button onclick="resetASAD()">reset</button>
+            </div>
+            
+            
+
+            
+        </div>
+        <div  style="display:flex;width:60%; ">
+            
+            <div style="width:15vw;margin-left:20px;">
+                <h3>Fiscal Policy</h3>
+                <p>Spending Multiplier:<span id="spendMulti"></span> </p>
+
+                <p>∆ GDP:<span id="outputChange"></span> </p>
+                <span>Amount: </span>
+                <input oninput="updateFiscalAmount()" id="fiscalInput" value=0 >
+                <p></p>
+                <button onclick="GovSpend()">Gov Spending</button>
+                <button onclick="GovSave()">Gov Saving</button>
+            </div>
+            
+
+            
+        </div>
+        <div style="margin-top:5vh;display:flex;width:100%; ">
+            <div>
+                <div style="width:15vw;margin-left:5px">
+                    <h3>Money Demand</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider"oninput="UpdateMD()" id="MDInput">
+                    </div>
+                </div>
+                <div >
+                    <h3>Money Supply</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" oninput="UpdateMS()" id="MSInput">
+                    </div>
+                </div>
+                <button onclick="resetMDMS()">reset</button>
+            </div>
+            <div style="width:15vw;margin-left:20px;">
+                <h3>Reserve Ratio</h3>
+                <span>rr: </span>
+                <input oninput="updateRR()" id="rrInput" value="0.5">
+                <p>Money Multiplier:<span id="moneyMulti"></span> </p>
+
+            </div>
+            <div style="width:15vw;"">
+                
+                <h3>Monetary Policy</h3>
+                <p>∆ MS:<span id="MSChange"></span> </p>
+                <span>Bond Value ($): </span>
+                <input oninput="updateRR()" id="bondAmount" value="0.5">
+                <p></p>
+                <button onclick="BondSell()">Sell Bonds</button>
+                <button onclick="BondBuy()">Buy Bonds</button>
+            </div>
+        </div>
+        
+        <div style="margin-top:5vh;display:flex;width:100%; ">
+            <div>
+                <div style="width:15vw;margin-left:5px">
+                    <h3>Loanable Funds Demanded</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider"oninput="UpdateLFD()" id="LFDInput">
+                    </div>
+                </div>
+                <div >
+                    <h3>Loanable Funds Supply</h3>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value="50" class="slider" oninput="UpdateLFS()" id="LFSInput">
+                    </div>
+                </div>
+                <button onclick="resetLF()">reset</button>
+            </div>
+            <div style="margin-left:20px;width:15vw;">
+                
+                <h3>Government Investment</h3>
+                <span>Amount ($): </span>
+                <input id="InvestAmount" value="0.5">
+                <p></p>
+                <button onclick="IncInvest()">Increase Gov Loans</button>
+                <button onclick="DecInvest()">Decrease Gov Loans</button>
+            </div>
+        </div>
+        <script src="app.js"></script>
+    </body>
+</html>
